@@ -1,5 +1,5 @@
 import { parseLinkHeader } from "../parse-link-header";
-import type { House } from "./types";
+import type { House, Character } from "./types";
 
 export async function getHouses({ page }: { page: number }): Promise<{
   houses: (House & { id: string })[];
@@ -20,6 +20,22 @@ export async function getHouses({ page }: { page: number }): Promise<{
   };
 }
 
-function extractId(url: string): string {
+export async function getHouse(id: string): Promise<House> {
+  const response = await fetch(
+    `https://www.anapioficeandfire.com/api/houses/${id}`
+  );
+
+  return response.json<House>();
+}
+
+export async function getCharacter(id: string): Promise<Character> {
+  const response = await fetch(
+    `https://www.anapioficeandfire.com/api/characters/${id}`
+  );
+
+  return response.json<Character>();
+}
+
+export function extractId(url: string): string {
   return url.substring(url.lastIndexOf("/") + 1);
 }
