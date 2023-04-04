@@ -5,8 +5,7 @@ import {
 } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import type { House } from "~/lib/asoiaf-api";
-import { parseLinkHeader } from "~/lib/parse-link-header";
+import { getHouses } from "~/lib/asoiaf-api";
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "A Song of Ice and Fire — overview" }];
@@ -21,7 +20,9 @@ export default function Houses() {
       <h1>Houses</h1>
       <ul>
         {houses.map((house) => (
-          <li key={house.url}>{house.name}</li>
+          <li key={house.url}>
+            <Link to={`/houses/${house.id}`}>{house.name}</Link>
+          </li>
         ))}
       </ul>
       <nav>
@@ -48,15 +49,8 @@ export async function loader({ request }: LoaderArgs) {
   const page = rawPage ? parseInt(rawPage, 10) : 1;
   invariant(!Number.isNaN(page), "page must be of type number");
 
-  const response = await fetch(
-    `https://www.anapioficeandfire.com/api/houses?page=${page}`
-  );
-  const parsedLinkHeader = parseLinkHeader(response.headers.get("link") ?? "");
-
   return json({
-    houses: (await response.json()) as House[],
     currentPage: page,
-    hasNextPage: "next" in parsedLinkHeader,
-    hasPrevPage: "prev" in parsedLinkHeader,
+    ...(await getHouses({ page })),
   });
 }
