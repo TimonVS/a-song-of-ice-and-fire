@@ -12,7 +12,7 @@ export const meta: V2_MetaFunction = () => {
   return [{ title: "A Song of Ice and Fire — overview" }];
 };
 
-export default function Index() {
+export default function Houses() {
   const { houses, currentPage, hasNextPage, hasPrevPage } =
     useLoaderData<typeof loader>();
 
@@ -28,12 +28,12 @@ export default function Index() {
         <ul>
           {hasPrevPage && (
             <li>
-              <Link to={`/houses/${currentPage - 1}`}>Prev</Link>
+              <Link to={`/houses?page=${currentPage - 1}`}>Prev</Link>
             </li>
           )}
           {hasNextPage && (
             <li>
-              <Link to={`/houses/${currentPage + 1}`}>Next</Link>
+              <Link to={`/houses?page=${currentPage + 1}`}>Next</Link>
             </li>
           )}
         </ul>
@@ -42,18 +42,20 @@ export default function Index() {
   );
 }
 
-export async function loader({ params }: LoaderArgs) {
-  const parsedPage = params.page ? parseInt(params.page, 10) : 1;
-  invariant(!Number.isNaN(parsedPage), "params.page must be of type number");
+export async function loader({ request }: LoaderArgs) {
+  const url = new URL(request.url);
+  const rawPage = url.searchParams.get("page");
+  const page = rawPage ? parseInt(rawPage, 10) : 1;
+  invariant(!Number.isNaN(page), "page must be of type number");
 
   const response = await fetch(
-    `https://www.anapioficeandfire.com/api/houses?page=${parsedPage}`
+    `https://www.anapioficeandfire.com/api/houses?page=${page}`
   );
   const parsedLinkHeader = parseLinkHeader(response.headers.get("link") ?? "");
 
   return json({
     houses: (await response.json()) as House[],
-    currentPage: parsedPage,
+    currentPage: page,
     hasNextPage: "next" in parsedLinkHeader,
     hasPrevPage: "prev" in parsedLinkHeader,
   });
