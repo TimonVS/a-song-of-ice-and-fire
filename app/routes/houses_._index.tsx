@@ -1,6 +1,7 @@
 import {
   type LoaderArgs,
   type V2_MetaFunction,
+  type HeadersFunction,
   json,
 } from "@remix-run/cloudflare";
 import { Link, useLoaderData } from "@remix-run/react";
@@ -49,8 +50,21 @@ export async function loader({ request }: LoaderArgs) {
   const page = rawPage ? parseInt(rawPage, 10) : 1;
   invariant(!Number.isNaN(page), "page must be of type number");
 
-  return json({
-    currentPage: page,
-    ...(await getHouses({ page })),
-  });
+  return json(
+    {
+      currentPage: page,
+      ...(await getHouses({ page })),
+    },
+    {
+      headers: {
+        "Cache-Control": "public, max-age=86400",
+      },
+    }
+  );
 }
+
+export const headers: HeadersFunction = ({ loaderHeaders }) => {
+  return {
+    "Cache-Control": loaderHeaders.get("Cache-Control")!,
+  };
+};
