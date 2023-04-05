@@ -6,6 +6,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { type LinksFunction } from "@remix-run/cloudflare";
+import { Header } from "./components/header";
+import stylesheet from "~/tailwind.css";
 
 export default function App() {
   return (
@@ -17,7 +20,10 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <Header />
+        <main className="max-w-lg px-4 mx-auto">
+          <Outlet />
+        </main>
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
@@ -25,3 +31,7 @@ export default function App() {
     </html>
   );
 }
+
+export const links: LinksFunction = () => [
+  { rel: "stylesheet", href: stylesheet },
+];

@@ -17,12 +17,32 @@ export default function HouseDetail() {
   const { house, members } = useLoaderData<typeof loader>();
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>{house.name}</h1>
-      <h2>Sworn members</h2>
-      <ul>
+    <div>
+      <h2 className="text-3xl mb-4">{house.name}</h2>
+
+      {house.words && (
+        <blockquote className="mb-4">
+          <p className="text-gray-600 font-serif italic text-xl before:content-[open-quote] after:content-[close-quote]">
+            {house.words}
+          </p>
+        </blockquote>
+      )}
+
+      <h3 className="text-2xl mb-2">Sworn members</h3>
+      <ul className="space-y-3">
         {members.map((member) => (
-          <li key={member.url}>{member.name}</li>
+          <li key={member.url} className="">
+            <h4 className="text-lg font-semibold inline-flex items-center gap-1">
+              {member.died && "† "}
+              {member.name}
+              {member.gender && (
+                <span className="text-sm text-gray-600">
+                  {member.gender === "Female" ? "♀" : "♂"}
+                </span>
+              )}
+            </h4>
+            {member.titles.length > 0 && <p>{member.titles.join(", ")}</p>}
+          </li>
         ))}
       </ul>
     </div>

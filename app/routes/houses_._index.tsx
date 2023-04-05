@@ -8,6 +8,8 @@ import { Link, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { getHouses } from "~/lib/asoiaf-api";
 
+const buttonClasses = "border rounded-lg bg-gray-100 p-2";
+
 export const meta: V2_MetaFunction = () => {
   return [{ title: "A Song of Ice and Fire — overview" }];
 };
@@ -17,25 +19,37 @@ export default function Houses() {
     useLoaderData<typeof loader>();
 
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Houses</h1>
-      <ul>
+    <div>
+      <h2 className="text-3xl mb-4">Houses</h2>
+      <ul className="list-disc pl-4 mb-4 space-y-1">
         {houses.map((house) => (
           <li key={house.url}>
-            <Link to={`/houses/${house.id}`}>{house.name}</Link>
+            <Link to={`/houses/${house.id}`} className="font-semibold">
+              {house.name}
+            </Link>
           </li>
         ))}
       </ul>
       <nav>
-        <ul>
+        <ul className="font-semibold space-x-4">
           {hasPrevPage && (
-            <li>
-              <Link to={`/houses?page=${currentPage - 1}`}>Prev</Link>
+            <li className="inline">
+              <Link
+                to={`/houses?page=${currentPage - 1}`}
+                className={buttonClasses}
+              >
+                ← Previous
+              </Link>
             </li>
           )}
           {hasNextPage && (
-            <li>
-              <Link to={`/houses?page=${currentPage + 1}`}>Next</Link>
+            <li className="inline">
+              <Link
+                to={`/houses?page=${currentPage + 1}`}
+                className={buttonClasses}
+              >
+                Next →
+              </Link>
             </li>
           )}
         </ul>

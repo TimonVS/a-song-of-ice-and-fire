@@ -33,7 +33,17 @@ export async function getCharacter(id: string): Promise<Character> {
     `https://www.anapioficeandfire.com/api/characters/${id}`
   );
 
-  return response.json<Character>();
+  const character = await response.json<Character>();
+
+  // Filter empty strings from arrays
+  for (const [key, value] of Object.entries(character)) {
+    if (Array.isArray(value)) {
+      // @ts-expect-error
+      character[key] = value.filter((x) => x !== "");
+    }
+  }
+
+  return character;
 }
 
 export function extractId(url: string): string {
